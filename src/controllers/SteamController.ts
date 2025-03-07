@@ -48,7 +48,7 @@ class SteamController {
           });
           const aiResponse =
             completion.choices[0]?.message?.content || "No response";
-          userId = "2";
+          userId = Date.now();
           if (!userConversations[userId]) {
             userConversations[userId] = [];
           }
