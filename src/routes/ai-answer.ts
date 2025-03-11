@@ -5,6 +5,10 @@ import { asyncHandler } from "../middleware/asyncHandler";
 import SteamController from "../controllers/SteamController";
 
 const router = Router();
-router.post("/get-answer", asyncHandler(SteamController.getAIResponse));
+router.post(
+  "/get-answer",
+  [checkJwt],
+  asyncHandler(SteamController.getAIResponse)
+);
 
 export default router;

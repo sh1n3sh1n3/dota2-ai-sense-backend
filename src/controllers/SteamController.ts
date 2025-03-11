@@ -29,6 +29,7 @@ class SteamController {
   static getAIResponse = async (req: Request, res: Response) => {
     try {
       const { message, chatId } = req.body;
+      const steamid = (req as CustomRequest).token.payload.steamid;
       let userId;
       dataFormat;
       if (!message) {
@@ -41,7 +42,7 @@ class SteamController {
         if (data) {
           const prompt = `${JSON.stringify(
             data
-          )} \n Analyze the following Dota 2 match and provide a detailed performance breakdown in the following format: \n ${dataFormat} \n And this is latest hero ids : ${heroIds}`;
+          )} \n ${steamid} \n this is my steamid. \n Analyze the following Dota 2 match and provide a detailed performance breakdown in the following format: \n ${dataFormat} \n And this is latest hero ids : ${heroIds}`;
           const completion = await openai.chat.completions.create({
             model: "gpt-4o",
             messages: [{ role: "user", content: prompt }],
