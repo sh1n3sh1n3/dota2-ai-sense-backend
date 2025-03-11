@@ -28,8 +28,7 @@ class SteamController {
 
   static getAIResponse = async (req: Request, res: Response) => {
     try {
-      const { message, chatId } = req.body;
-      const steamid = (req as CustomRequest).token.payload.steamid;
+      const { message, chatId, steamid } = req.body;
       let userId;
       dataFormat;
       if (!message) {
