@@ -53,7 +53,13 @@ const userSchema = new mongoose.Schema<IUser>(
 );
 
 userSchema.statics.build = (attr: IUser) => {
-  return new User(attr);
+  return new User({
+    steamid: attr.steamid,
+    email: attr.email ?? "",
+    location: attr.location ?? "",
+    name: attr.name,
+    subscription: attr.subscription ?? "free",
+  });
 };
 
 userSchema.set("toJSON", {

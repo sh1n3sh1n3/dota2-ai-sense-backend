@@ -42,8 +42,11 @@ class AuthController {
         data.response.players.length > 0
       ) {
         const player = data.response.players[0];
-        const { steamid, realname } = player;
-        const user = await UserController.newUser({ steamid, name: realname });
+        const { steamid, personaname } = player;
+        const user = await UserController.newUser({
+          steamid,
+          name: personaname,
+        });
         const accessToken = generatorToken(user);
         // Respond with the player data as verification
         return res.json({
