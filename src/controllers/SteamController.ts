@@ -9,6 +9,7 @@ import { CustomRequest } from "../middleware/checkJwt";
 import { processErrors } from "../utils/errorProcessing";
 import config from "../config";
 import { dataFormat } from "../utils/dataFormat";
+import { heroIds } from "../utils/heroIds";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const userConversations: {
   [userId: string]: { role: string; content: string }[];
@@ -40,7 +41,7 @@ class SteamController {
         if (data) {
           const prompt = `${JSON.stringify(
             data
-          )} \n Analyze the following Dota 2 match and provide a detailed performance breakdown in the following format: \n ${dataFormat}`;
+          )} \n Analyze the following Dota 2 match and provide a detailed performance breakdown in the following format: \n ${dataFormat} \n And this is latest hero ids : ${heroIds}`;
           const completion = await openai.chat.completions.create({
             model: "gpt-4o",
             messages: [{ role: "user", content: prompt }],
