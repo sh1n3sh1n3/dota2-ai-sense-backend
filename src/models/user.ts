@@ -32,7 +32,6 @@ const userSchema = new mongoose.Schema<IUser>(
     },
     email: {
       type: String,
-      unique: true,
       trim: true,
     },
     location: {
