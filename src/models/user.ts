@@ -33,6 +33,8 @@ const userSchema = new mongoose.Schema<IUser>(
     email: {
       type: String,
       trim: true,
+      unique: true,
+      sparse: true, // Allows multiple documents with null/undefined values
     },
     location: {
       type: String,

@@ -25,6 +25,26 @@ class SteamController {
       return null;
     }
   };
+  static getItems = async () => {
+    const url = `https://api.opendota.com/api/constants/items`;
+
+    try {
+      const response = await axios.get(url);
+      return response.data;
+    } catch (error) {
+      return null;
+    }
+  };
+  static getHeroes = async () => {
+    const url = `https://api.opendota.com/api/constants/heroes`;
+
+    try {
+      const response = await axios.get(url);
+      return response.data;
+    } catch (error) {
+      return null;
+    }
+  };
 
   static getAIResponse = async (req: Request, res: Response) => {
     try {
@@ -36,12 +56,34 @@ class SteamController {
       }
 
       if (!chatId) {
-        const data = await this.getMatchDetails(message);
-        console.log("data: ", data);
-        if (data) {
-          const prompt = `${JSON.stringify(
-            data
-          )} \n ${steamid} \n this is my steamid. \n Analyze the following Dota 2 match and provide a detailed performance breakdown in the following format: \n ${dataFormat} \n And this is latest hero ids : ${heroIds}`;
+        const matchDetails = await this.getMatchDetails(message);
+        const heroes = await this.getHeroes();
+        const heroLists = Object.entries(heroes).map(
+          ([name, data]: [string, any]) => ({
+            name: data.localized_name,
+            id: data.id,
+          })
+        );
+        const items = await this.getItems();
+        const itemLists = Object.entries(items).map(
+          ([name, data]: [string, any]) => ({
+            id: data.id,
+            name,
+          })
+        );
+        const accountId = this.getOpenDotaAccountID(steamid);
+
+        if (matchDetails) {
+          const prompt = `
+          My account id is ${accountId}. If my Dota 2 account is in this match,
+          Latest hero IDs:  ${JSON.stringify(heroLists)}
+          If my account ID is not in the match, don't analyze the result.
+          Use the following data to analyze items: ${JSON.stringify(itemLists)}
+          ${JSON.stringify(matchDetails)}
+          this is dota2 match details.
+          analyze the match and provide a detailed breakdown in this format:
+          ${dataFormat}
+        `;
           const completion = await openai.chat.completions.create({
             model: "gpt-4o",
             messages: [{ role: "user", content: prompt }],
@@ -97,6 +139,11 @@ class SteamController {
       console.error("OpenAI API error:", error);
       res.status(500).json({ error: "Failed to fetch AI response" });
     }
+  };
+
+  static getOpenDotaAccountID = (steamID64: any) => {
+    const base = BigInt("76561197960265728");
+    return BigInt(steamID64) - base;
   };
 }
 
