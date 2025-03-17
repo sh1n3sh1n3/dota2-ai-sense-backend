@@ -10,6 +10,7 @@ import { processErrors } from "../utils/errorProcessing";
 import config from "../config";
 import { dataFormat } from "../utils/dataFormat";
 import { heroIds } from "../utils/heroIds";
+import { IQA, QA } from "../models/qa";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const userConversations: {
   [userId: string]: { role: string; content: string }[];
@@ -48,7 +49,7 @@ class SteamController {
 
   static getAIResponse = async (req: Request, res: Response) => {
     try {
-      const { message, chatId, steamid } = req.body;
+      const { message, chatId, steamid, defaultQuestion } = req.body;
       let userId;
       dataFormat;
       if (!message) {
@@ -80,9 +81,8 @@ class SteamController {
           If my account ID is not in the match, don't analyze the result.
           Use the following data to analyze items: ${JSON.stringify(itemLists)}
           ${JSON.stringify(matchDetails)}
-          this is dota2 match details.
-          analyze the match and provide a detailed breakdown in this format:
-          ${dataFormat}
+          this is dota2 match details.Analyze only my match detail.
+          ${defaultQuestion}
         `;
           const completion = await openai.chat.completions.create({
             model: "gpt-4o",
@@ -144,6 +144,19 @@ class SteamController {
   static getOpenDotaAccountID = (steamID64: any) => {
     const base = BigInt("76561197960265728");
     return BigInt(steamID64) - base;
+  };
+
+  static saveQA = async (req: Request, res: Response) => {
+    const { data } = req.body;
+    const qa = QA.build(data as IQA);
+    const result = await qa.save();
+    res.send(result);
+  };
+
+  static getQA = async (req: Request, res: Response) => {
+    const { steamid } = req.body;
+    const results = await QA.find({ steamid });
+    res.send({ results });
   };
 }
 
