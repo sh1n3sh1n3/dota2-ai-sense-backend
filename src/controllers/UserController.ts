@@ -54,23 +54,22 @@ class UserController {
 
   static editUser = async (req: Request, res: Response, next: NextFunction) => {
     // Get the ID from the url
-    const id = req.params.id;
+    // const id = req.params.id;
 
     // Validate permissions
-    if (
-      (req as CustomRequest).token.payload.role === ROLES.USER &&
-      req.params.id !== (req as CustomRequest).token.payload.userId
-    ) {
-      throw new ApiError(httpStatus.FORBIDDEN, "Not enough permissions");
-    }
+    // if (
+    //   (req as CustomRequest).token.payload.role === ROLES.USER &&
+    //   req.params.id !== (req as CustomRequest).token.payload.userId
+    // ) {
+    //   throw new ApiError(httpStatus.FORBIDDEN, "Not enough permissions");
+    // }
 
     // Get values from the body
-    const { email, role } = req.body;
+    const { email, steamid } = req.body;
 
     // Mongoose automatically casts the id to ObjectID
-    const user = await User.findById(id).select(["_id", "email", "role"]);
-    if (!user)
-      throw new ApiError(httpStatus.NOT_FOUND, `User with ID ${id} not found`);
+    const user = await User.findOne({ steamid }).exec();
+    if (!user) throw new ApiError(httpStatus.NOT_FOUND, `User not found`);
 
     // Edit the properties
     if (email) user.email = email;

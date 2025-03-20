@@ -1,5 +1,3 @@
-import crypto from "crypto";
-import dotenv from "dotenv";
 import httpStatus from "http-status";
 import { NextFunction, Request, Response } from "express";
 import axios from "axios";
@@ -10,7 +8,6 @@ import { CustomRequest } from "../middleware/checkJwt";
 import { generatorToken } from "../utils/generatorToken";
 import config from "../config";
 import UserController from "./UserController";
-dotenv.config();
 class AuthController {
   static verifySteam = async (req: Request, res: Response) => {
     /* This code snippet is a method named `verifySteam` inside the `AuthController` class. Here's a
@@ -23,7 +20,7 @@ class AuthController {
           .status(400)
           .json({ error: "steamid is required in the request body." });
       }
-      const apiKey = process.env.STEAM_API_KEY;
+      const apiKey = config.steamApiKey;
       if (!apiKey) {
         return res
           .status(500)

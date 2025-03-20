@@ -8,6 +8,7 @@ export interface IUser {
   location: string;
   name: string;
   subscription: string;
+  customerId: string;
 }
 
 interface userModelInterface extends mongoose.Model<UserDoc> {
@@ -20,6 +21,7 @@ interface UserDoc extends mongoose.Document {
   location: string;
   name: string;
   subscription: string;
+  customerId: string;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -48,6 +50,10 @@ const userSchema = new mongoose.Schema<IUser>(
       type: String,
       trim: true,
     },
+    customerId: {
+      type: String,
+      trim: true,
+    },
   },
   // Created at and updated at timestamps
   { timestamps: true }
@@ -59,7 +65,8 @@ userSchema.statics.build = (attr: IUser) => {
     email: attr.email ?? "",
     location: attr.location ?? "",
     name: attr.name,
-    subscription: attr.subscription ?? "free",
+    subscription: attr.subscription ?? "Free",
+    customerId: attr.customerId ?? "",
   });
 };
 

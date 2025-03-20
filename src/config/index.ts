@@ -15,6 +15,10 @@ const config = {
   domain: process.env.DOMAIN,
   emailUser: process.env.EMAIL_USER,
   emailPass: process.env.EMAIL_PASS,
+  steamApiKey: process.env.STEAM_API_KEY,
+  stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+  stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+  openAIApiKey: process.env.OPENAI_API_KEY,
 };
 
 export default config;

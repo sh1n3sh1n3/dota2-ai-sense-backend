@@ -9,9 +9,8 @@ import { CustomRequest } from "../middleware/checkJwt";
 import { processErrors } from "../utils/errorProcessing";
 import config from "../config";
 import { dataFormat } from "../utils/dataFormat";
-import { heroIds } from "../utils/heroIds";
 import { IQA, QA } from "../models/qa";
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const openai = new OpenAI({ apiKey: config.openAIApiKey });
 const userConversations: {
   [userId: string]: { role: string; content: string }[];
 } = {};
