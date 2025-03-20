@@ -66,7 +66,7 @@ class PlanController {
             items: [
               {
                 id: currentSubscriptionItem.id,
-                price: "price_1R3sgJDaKJM1BjeiISRRRaR8",
+                price: priceId,
               },
             ],
             proration_behavior: "create_prorations",
