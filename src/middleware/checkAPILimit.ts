@@ -45,3 +45,12 @@ export const checkMonthlyLimit = async (steamid: string) => {
   usage.count += 1;
   await usage.save();
 };
+
+export const getLimitCount = async (steamid: string) => {
+  const usage = await APIUsage.findOne({ steamid });
+  if (usage) {
+    return usage.count;
+  } else {
+    return 0;
+  }
+};

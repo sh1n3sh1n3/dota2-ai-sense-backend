@@ -14,7 +14,8 @@ import { ActionLog } from "../models/actionlog";
 import { IActionLog } from "../models/actionlog";
 import { PreQuestion } from "../models/prequestion";
 import { IPreQuestion } from "../models/prequestion";
-import { checkMonthlyLimit } from "../middleware/checkAPILimit";
+import { checkMonthlyLimit, getLimitCount } from "../middleware/checkAPILimit";
+import { User } from "../models/user";
 const openai = new OpenAI({ apiKey: config.openAIApiKey });
 const userConversations: {
   [userId: string]: { role: string; content: string }[];
@@ -53,10 +54,17 @@ class SteamController {
 
   static getAIResponse = async (req: Request, res: Response) => {
     const { message, chatId, steamid, defaultQuestion } = req.body;
-    try {
-      await checkMonthlyLimit(steamid);
-    } catch (error) {
-      return res.status(429).json({ error: error });
+    const user = await User.findOne({ steamid });
+    if (user) {
+      if (user.subscription.toLowerCase() === "free") {
+        try {
+          await checkMonthlyLimit(steamid);
+        } catch (error) {
+          return res.status(429).json({ error: error });
+        }
+      }
+    } else {
+      res.status(404).json("Not Found user");
     }
     try {
       let userId;
@@ -232,6 +240,13 @@ class SteamController {
   static getPrequestion = async (req: Request, res: Response) => {
     const results = await PreQuestion.find();
     res.send({ results });
+  };
+
+  static getLimitQuestionCount = async (req: Request, res: Response) => {
+    const { data } = req.body;
+    console.log("data", data, data.steamid);
+    const count = await getLimitCount(data.steamid);
+    res.send({ count });
   };
 }
 

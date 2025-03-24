@@ -12,6 +12,10 @@ router.get("/get-prequestion", asyncHandler(SteamController.getPrequestion));
 router.post("/save-prequestion", asyncHandler(SteamController.savePreQuestion));
 router.post("/edit-prequestion", asyncHandler(SteamController.editPreQuestion));
 router.post(
+  "/get-limitcount",
+  asyncHandler(SteamController.getLimitQuestionCount)
+);
+router.post(
   "/delete-prequestion",
   asyncHandler(SteamController.deletePreQuestion)
 );
