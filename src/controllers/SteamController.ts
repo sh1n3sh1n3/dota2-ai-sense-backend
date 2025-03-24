@@ -10,6 +10,11 @@ import { processErrors } from "../utils/errorProcessing";
 import config from "../config";
 import { dataFormat } from "../utils/dataFormat";
 import { IQA, QA } from "../models/qa";
+import { ActionLog } from "../models/actionlog";
+import { IActionLog } from "../models/actionlog";
+import { PreQuestion } from "../models/prequestion";
+import { IPreQuestion } from "../models/prequestion";
+import { checkMonthlyLimit } from "../middleware/checkAPILimit";
 const openai = new OpenAI({ apiKey: config.openAIApiKey });
 const userConversations: {
   [userId: string]: { role: string; content: string }[];
@@ -47,8 +52,13 @@ class SteamController {
   };
 
   static getAIResponse = async (req: Request, res: Response) => {
+    const { message, chatId, steamid, defaultQuestion } = req.body;
     try {
-      const { message, chatId, steamid, defaultQuestion } = req.body;
+      await checkMonthlyLimit(steamid);
+    } catch (error) {
+      return res.status(429).json({ error: error });
+    }
+    try {
       let userId;
       dataFormat;
       if (!message) {
@@ -155,6 +165,72 @@ class SteamController {
   static getQA = async (req: Request, res: Response) => {
     const { steamid } = req.body;
     const results = await QA.find({ steamid });
+    res.send({ results });
+  };
+
+  static saveActionLog = async (req: Request, res: Response) => {
+    const { data } = req.body;
+    if (data) {
+      const actionlog = ActionLog.build(data as IActionLog);
+      try {
+        await actionlog.save();
+        res.send({ success: true });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed save action!" });
+      }
+    }
+  };
+
+  static savePreQuestion = async (req: Request, res: Response) => {
+    const { data } = req.body;
+
+    if (data) {
+      const prequestion = PreQuestion.build(data as IPreQuestion);
+      try {
+        await prequestion.save();
+        const results = await PreQuestion.find();
+        res.send({ results });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed save pre-question!" });
+      }
+    }
+  };
+  static editPreQuestion = async (req: Request, res: Response) => {
+    const { data } = req.body;
+
+    if (data) {
+      const prequestion = await PreQuestion.findById(data.id);
+      if (prequestion) {
+        prequestion.question = data.question;
+        await prequestion.save();
+        const results = await PreQuestion.find();
+        res.send({ results });
+      } else {
+        res.status(404).send({ error: "Not found pre question." });
+      }
+    } else {
+      res.status(400).send({
+        error:
+          "The server cannot or will not process the request due to an apparent client error.",
+      });
+    }
+  };
+
+  static deletePreQuestion = async (req: Request, res: Response) => {
+    const { data } = req.body;
+    try {
+      await PreQuestion.findOneAndDelete({ id: data.id });
+      const results = await PreQuestion.find();
+      res.send({ results });
+    } catch (error) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Not found question!");
+    }
+  };
+
+  static getPrequestion = async (req: Request, res: Response) => {
+    const results = await PreQuestion.find();
     res.send({ results });
   };
 }
