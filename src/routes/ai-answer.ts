@@ -8,7 +8,7 @@ const router = Router();
 router.post("/get-answer", asyncHandler(SteamController.getAIResponse));
 router.post("/save-qa", asyncHandler(SteamController.saveQA));
 router.post("/get-qa", asyncHandler(SteamController.getQA));
-router.get("/get-prequestion", asyncHandler(SteamController.getPrequestion));
+router.post("/get-prequestion", asyncHandler(SteamController.getPrequestion));
 router.post("/save-prequestion", asyncHandler(SteamController.savePreQuestion));
 router.post("/edit-prequestion", asyncHandler(SteamController.editPreQuestion));
 router.post(
