@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IQA {
   steamid: string;
+  matchId: string;
   messages: object[];
 }
 
@@ -11,12 +12,17 @@ interface QAModelInterface extends mongoose.Model<QADoc> {
 
 interface QADoc extends mongoose.Document {
   steamid: string;
+  matchId: string;
   messages: object[];
 }
 
 const QASchema = new mongoose.Schema<IQA>(
   {
     steamid: {
+      type: String,
+      trim: true,
+    },
+    matchId: {
       type: String,
       trim: true,
     },
@@ -33,6 +39,7 @@ const QASchema = new mongoose.Schema<IQA>(
 QASchema.statics.build = (attr: IQA) => {
   return new QA({
     steamid: attr.steamid ?? "",
+    matchId: attr.matchId ?? "",
     messages: attr.messages ?? [],
   });
 };

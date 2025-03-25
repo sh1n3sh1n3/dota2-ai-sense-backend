@@ -14,7 +14,6 @@ class AuthController {
   breakdown of what it does: */
     try {
       const { steamid } = req.body;
-      console.log("steamid", steamid);
       if (!steamid) {
         return res
           .status(400)

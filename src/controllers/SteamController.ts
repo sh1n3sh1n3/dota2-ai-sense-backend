@@ -52,6 +52,54 @@ class SteamController {
     }
   };
 
+  static getFreeQuestionAndAnswer = async (req: Request, res: Response) => {
+    const { message, chatId, steamid } = req.body;
+    let userId;
+    if (chatId) {
+      userId = chatId;
+      // Add user message to conversation history
+      userConversations[userId].push({ role: "user", content: message });
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: userConversations[
+          userId
+        ] as OpenAI.ChatCompletionMessageParam[],
+        max_tokens: 800, // Adjust response length as needed
+      });
+
+      // Get AI response and add to history
+      const aiResponse =
+        completion.choices[0]?.message?.content || "No response";
+      userConversations[userId].push({
+        role: "assistant",
+        content: aiResponse,
+      });
+      res.json({ result: aiResponse, userId });
+    } else {
+      userId = Date.now();
+      if (!userConversations[userId]) {
+        userConversations[userId] = [];
+      }
+      userConversations[userId].push({ role: "user", content: message });
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: userConversations[
+          userId
+        ] as OpenAI.ChatCompletionMessageParam[],
+        max_tokens: 800, // Adjust response length as needed
+      });
+
+      // Get AI response and add to history
+      const aiResponse =
+        completion.choices[0]?.message?.content || "No response";
+      userConversations[userId].push({
+        role: "assistant",
+        content: aiResponse,
+      });
+      res.json({ result: aiResponse, userId });
+    }
+  };
+
   static getAIResponse = async (req: Request, res: Response) => {
     const { message, chatId, steamid, defaultQuestion } = req.body;
     const user = await User.findOne({ steamid });
@@ -117,7 +165,7 @@ class SteamController {
             role: "assistant",
             content: aiResponse,
           });
-          res.json({ result: aiResponse, userId });
+          res.json({ result: aiResponse, userId, matchId: message });
         } else {
           res.send({ result: "Type again match Id!" });
         }
@@ -244,7 +292,6 @@ class SteamController {
 
   static getLimitQuestionCount = async (req: Request, res: Response) => {
     const { data } = req.body;
-    console.log("data", data, data.steamid);
     const count = await getLimitCount(data.steamid);
     res.send({ count });
   };

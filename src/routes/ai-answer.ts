@@ -10,7 +10,12 @@ router.post("/save-qa", asyncHandler(SteamController.saveQA));
 router.post("/get-qa", asyncHandler(SteamController.getQA));
 router.post("/get-prequestion", asyncHandler(SteamController.getPrequestion));
 router.post("/save-prequestion", asyncHandler(SteamController.savePreQuestion));
+router.post("/save-actionlog", asyncHandler(SteamController.saveActionLog));
 router.post("/edit-prequestion", asyncHandler(SteamController.editPreQuestion));
+router.post(
+  "/get-freeanswer",
+  asyncHandler(SteamController.getFreeQuestionAndAnswer)
+);
 router.post(
   "/get-limitcount",
   asyncHandler(SteamController.getLimitQuestionCount)
@@ -19,4 +24,5 @@ router.post(
   "/delete-prequestion",
   asyncHandler(SteamController.deletePreQuestion)
 );
+
 export default router;
