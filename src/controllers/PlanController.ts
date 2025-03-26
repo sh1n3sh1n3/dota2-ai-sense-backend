@@ -201,7 +201,7 @@ class PlanController {
   static cancelSubscription = async (req: Request, res: Response) => {
     try {
       const { steamid } = req.body;
-      const cancelImmediately = true;
+      const cancelImmediately = false;
       const user = await User.findOne({ steamid }).exec();
       if (!user) {
         return res.status(404).json({ error: "User doesn't registered!" });
@@ -241,7 +241,7 @@ class PlanController {
           }
         );
       }
-      user.subscription = "Free";
+      //   user.subscription = "Free";
       user.customerId = "";
       await user.save();
 

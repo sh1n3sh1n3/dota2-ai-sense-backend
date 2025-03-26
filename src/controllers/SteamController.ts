@@ -54,6 +54,18 @@ class SteamController {
 
   static getFreeQuestionAndAnswer = async (req: Request, res: Response) => {
     const { message, chatId, steamid } = req.body;
+    const user = await User.findOne({ steamid });
+    if (user) {
+      if (user.subscription.toLowerCase() === "free") {
+        try {
+          await checkMonthlyLimit(steamid);
+        } catch (error) {
+          return res.status(429).json({ error: error });
+        }
+      }
+    } else {
+      res.status(404).json("Not Found user");
+    }
     let userId;
     if (chatId) {
       userId = chatId;
