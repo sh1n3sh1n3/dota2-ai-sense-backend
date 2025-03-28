@@ -82,7 +82,7 @@ class UserController {
       throw new ApiError(httpStatus.BAD_REQUEST, processErrors(error));
     }
 
-    res.status(204).type("json").send(user.toJSON());
+    res.status(200).type("json").send(user.toJSON());
   };
 
   static deleteUser = async (

@@ -9,4 +9,5 @@ router.post("/purchase-plan", asyncHandler(PlanController.purchasePlan));
 router.get("/get-prices", asyncHandler(PlanController.getPrices));
 router.post("/webhook", asyncHandler(PlanController.webhook));
 router.post("/cancel-plan", asyncHandler(PlanController.cancelSubscription));
+router.post("/webhook", asyncHandler(PlanController.webhook));
 export default router;
